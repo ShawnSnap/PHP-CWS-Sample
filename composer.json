@@ -1,0 +1,13 @@
+{
+	"name" : "evo/example",
+	"repositories" : [{
+			"type" : "vcs",
+			"url" : "https://github.com/EVO-Snap/PHP-CWS-lib"
+		}
+	],
+	"require" : {
+		"tracy/tracy": "v2.6.4",
+		"bvanhoekelen/terminal-style": "v1.0.4",
+        "evo/cws-snap": "2.1.30"
+	}
+}

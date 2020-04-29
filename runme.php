@@ -86,7 +86,7 @@ try {
     resultLine($capResponse->TransactionId . " - " . $capResponse->Status . ": " . $capResponse->TransactionState);
 
     /**
-     * Undo() is used to cancel an Authorize() that you do not wish to Capture().
+     * Undo() is used to cancel an Authorize() that you do not wish to Capture(), or a Capture() you do not wish to batch.
      *
      * See:  https://docs.evosnap.com/commerce-web-services/cws-api-reference/rest-api-reference/tps-json-requests-bankcard/#undotxn
      */
@@ -119,17 +119,14 @@ try {
     /**
      * Every transaction run through Snap* produces a token value, which may be used in future transactions.
      *
-     * This token is called PaymentAccountDataToken
+     * This token is called "PaymentAccountDataToken"
      *
      * See:  https://docs.evosnap.com/commerce-web-services/cws-api-reference/rest-api-reference/tps-json-requests-bankcard/#returnbyid
      */
     headingLine("TPS: Authroization with Token " . $authAndCapResponse->PaymentAccountDataToken);
     $token = $authAndCapResponse->PaymentAccountDataToken;
     $authTokenTransaction = DataGenerator::createBankcardTransaction();
-    //$bankcardTenderData = new BankcardTenderDataPro();
     $authTokenTransaction->TenderData->PaymentAccountDataToken = $token;
-    //$bankcardTenderData->CardholderIdType = "DigitalSig";
-    //$authTokenTransaction->TenderData = $bankcardTenderData;
     dump($authTokenTransaction);
     $authTokenResponse = $client->authorize($authTokenTransaction, $applicationProfileId, $merchantProfileId, $serviceId);
     dump($authTokenResponse);
@@ -152,15 +149,14 @@ try {
     $pagingParameters->PageSize = 7;
 
 
-    // "Summaries" contain more less information about transactions, and runs faster.
+    // "Summaries" contain less information about individual transactions, and runs faster.
     headingLine("TMS: Query for transaction summaries");
     $transactionsSummaries = $client->queryTransactionsSummary($parameters, $pagingParameters, true);
-//    $transaction=json_encode($transactionsSummaries, JSON_PRETTY_PRINT);
     foreach ($transactionsSummaries as $summary) {
         dump($summary);
     }
 
-    // "Details" contain more detailed information about transactions, and runs slower.
+    // "Details" contain more detailed information about individual transactions, and runs slower.
     headingLine("TMS: Query for transaction details");
     $transactionDetails = $client->queryTransactionsDetail($parameters, "CWSTransaction", $pagingParameters, true);
     foreach ($transactionDetails as $detail) {
